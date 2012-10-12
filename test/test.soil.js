@@ -134,6 +134,7 @@ describe("soil.Config", function(){
 	it("set or get the option value by config()", function(){
 		c.config("hoge", 1);
 		c.config("fuga", 2);
+
 		expect(c.config("hoge")).toEqual(1);
 		expect(c.config("fuga")).toEqual(2);
 	});
