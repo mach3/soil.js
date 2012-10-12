@@ -1,7 +1,7 @@
 /*!
  *
  * Soil.js
- * http://mach3ss.github.com/soil.js
+ * http://mach3.github.com/soil.js
  *
  * - Library for class base programming with JavaScript
  *
