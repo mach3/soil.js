@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Soil.js : The basic prototype collection for class base programming with JavaScript, jQuery. " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Soil.js</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mach3/soil.js">View on GitHub</a>
+
+          <h1 id="project_title">Soil.js</h1>
+          <h2 id="project_tagline">The basic prototype collection for class base programming with JavaScript, jQuery. </h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mach3/soil.js/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mach3/soil.js/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Soil.js</h1>
+
+<p>The basic prototype collection for class base programming with JavaScript, jQuery.</p>
+
+<h2>About</h2>
+
+<ul>
+<li>Just extend the prototype, add basic features to your classes</li>
+<li>Events, Config, Model, Stack is available</li>
+<li>Requires jQuery</li>
+</ul><h2>Usage</h2>
+
+<h3>soil.Events</h3>
+
+<p>First of all, define the "Foo" class as below.
+Extend the "soil.Events" using "soil.extend()".</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Constructor</span>
+<span class="p">};</span>
+<span class="c1">// Extend the Event's prototype</span>
+<span class="nx">soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Foo</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+
+<span class="c1">// Set your own features</span>
+<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
+<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">hoge</span> <span class="o">=</span> <span class="s2">"fuga"</span><span class="p">;</span>
+</pre></div>
+
+<p>And initialize with "new".
+on(), off(), trigger() is available now.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">,</span>
+    <span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span> <span class="p">...</span> <span class="p">};</span>
+
+<span class="nx">f</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// add event listener</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// fire the event</span>
+
+<span class="nx">f</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// unregister event listener</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// nothing is happend</span>
+</pre></div>
+
+<h3>soil.Model</h3>
+
+<p>This is example for "soil.Model".
+set(), get() is available.</p>
+
+<p>soil.Model has also save() and validate(), but they are empty function.
+Then you have to write your own save method by yourself.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// Constructor</span>
+<span class="p">};</span>
+<span class="c1">// can extend multiple classes</span>
+<span class="nx">soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Model</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+
+<span class="c1">// Set your own attribute</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="nx">age</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="nx">gender</span> <span class="o">:</span> <span class="kc">null</span>
+<span class="p">};</span>
+
+<span class="c1">// Your own save() method</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>And initialize with "new",
+then features of soil.Model and soil.Events are available now.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">;</span>
+
+<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"john"</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"male"</span><span class="p">);</span>
+
+<span class="nx">p</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// somwthing will be happend</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1">// set values with object</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="s2">"john"</span><span class="p">,</span>
+    <span class="nx">age</span> <span class="o">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="nx">gender</span> <span class="o">:</span> <span class="s2">"male"</span>
+<span class="p">});</span>
+
+<span class="c1">// get value</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">);</span> <span class="c1">// =&gt; "john"</span>
+
+<span class="c1">// get all values</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span> <span class="c1">// =&gt; {name:"john", age:18, gender:"male"}</span>
+</pre></div>
+
+<h3>Other Classes</h3>
+
+<p>soil.Config, soil.Stack is available.</p>
+
+<h2>Author</h2>
+
+<p>mach3ss</p>
+
+<ul>
+<li><a href="http://twitter.com/mach3ss">Twitter</a></li>
+<li><a href="http://blog.mach3.jp">Blog</a></li>
+<li><a href="http://www.mach3.jp">WebSite</a></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Soil.js maintained by <a href="https://github.com/mach3">mach3</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
