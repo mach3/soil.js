@@ -35,7 +35,7 @@ soil.extend = function(){
 	args = arguments;
 	base = [].shift.call(args).prototype;
 	for(i=0; i<args.length; i+=1){
-		$.extend(base, args[i].prototype);
+		base = $.extend(true, base, args[i].prototype);
 	}
 };
 
