@@ -35,7 +35,18 @@ soil.extend = function(){
 soil.Events = function(){};
 (function(){
 
-	this._events = [];
+	this._events = {};
+	this._eventsInit = false;
+
+	/**
+	 * Get if having the event type
+	 * 
+	 * @param String type
+	 * @return Boolean
+	 */
+	this.hasEvent = function(type){
+		return soil.fn.has(type, this._events) && this._events[type].length > 0;
+	};
 
 	/**
 	 * Add event handler
@@ -45,10 +56,14 @@ soil.Events = function(){};
 	 * @return self
 	 */
 	this.on = function(type, handler){
-		this._events.push({
-			type : type,
-			handler : handler
-		});
+		if(! this._eventsInit){
+			this._events = $.extend({}, this._events);
+			this._eventsInit = true;
+		}
+		if(! this.hasEvent(type)){
+			this._events[type] = [];
+		}
+		this._events[type].push(handler);
 		return this;
 	};
 
@@ -60,12 +75,11 @@ soil.Events = function(){};
 	 * @return self
 	 */
 	this.off = function(type, handler){
-		this._events = $.map(this._events, function(e){
-			if(e.type === type && e.handler === handler){
-				return null;
-			}
-			return e;
-		});
+		if(this.hasEvent(type)){
+			this._events[type] = $.map(this._events[type], function(f){
+				return handler === f ? null : f;
+			});
+		}
 		return this;
 	};
 
@@ -75,15 +89,15 @@ soil.Events = function(){};
 	 * @param String type
 	 */
 	this.trigger = function(type){
-		var self = this;
-		$.each(this._events, function(i, e){
-			if(e.type === type){
-				e.handler.apply(self, {
+		var i;
+		if(this.hasEvent(type)){
+			for(i=0; i<this._events[type].length; i+=1){
+				this._events[type][i].apply(this, [{
 					type : type,
-					target : self
-				});
+					target : this
+				}]);
 			}
-		});
+		}
 		return this;
 	};
 
