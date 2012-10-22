@@ -43,16 +43,16 @@
 <li>Requires jQuery</li>
 </ul><h2>Usage</h2>
 
-<h3>soil.Events</h3>
+<h3>Soil.Events</h3>
 
 <p>First of all, define the "Foo" class as below.
-Extend the "soil.Events" using "soil.extend()".</p>
+Extend the "Soil.Events" using "Soil.extend()".</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="c1">// Constructor</span>
 <span class="p">};</span>
 <span class="c1">// Extend the Event's prototype</span>
-<span class="nx">soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Foo</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+<span class="nx">Soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Foo</span><span class="p">,</span> <span class="nx">Soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
 
 <span class="c1">// Set your own features</span>
 <span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
@@ -72,19 +72,17 @@ on(), off(), trigger() is available now.</p>
 <span class="nx">f</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// nothing is happend</span>
 </pre></div>
 
-<h3>soil.Model</h3>
+<h3>Soil.Model</h3>
 
-<p>This is example for "soil.Model".
-set(), get() is available.</p>
-
-<p>soil.Model has also save() and validate(), but they are empty function.
-Then you have to write your own save method by yourself.</p>
+<p>This is example for "Soil.Model".
+set(), get() is available.
+And also on(), trigger() of soil.Events is available.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="c1">// Constructor</span>
 <span class="p">};</span>
 <span class="c1">// can extend multiple classes</span>
-<span class="nx">soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Model</span><span class="p">,</span> <span class="nx">soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+<span class="nx">Soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">Soil</span><span class="p">.</span><span class="nx">Model</span><span class="p">);</span>
 
 <span class="c1">// Set your own attribute</span>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="p">{</span>
@@ -92,22 +90,21 @@ Then you have to write your own save method by yourself.</p>
     <span class="nx">age</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
     <span class="nx">gender</span> <span class="o">:</span> <span class="kc">null</span>
 <span class="p">};</span>
-
-<span class="c1">// Your own save() method</span>
-<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">save</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-<span class="p">};</span>
 </pre></div>
 
 <p>And initialize with "new",
-then features of soil.Model and soil.Events are available now.</p>
+then features of Soil.Model and Soil.Events are available now.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">;</span>
+
+<span class="nx">p</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// "change" event will be fired when something changed.</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"something has been changed"</span><span class="p">);</span>
+<span class="p">});</span>
 
 <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"john"</span><span class="p">);</span>
 <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
 <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"male"</span><span class="p">);</span>
-
-<span class="nx">p</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// somwthing will be happend</span>
 </pre></div>
 
 <div class="highlight"><pre><span class="c1">// set values with object</span>
@@ -126,9 +123,12 @@ then features of soil.Model and soil.Events are available now.</p>
 
 <h3>Other Classes</h3>
 
-<p>soil.Config, soil.Stack is available.</p>
-
-<h2>Author</h2>
+<ul>
+<li>Soil.Attributes</li>
+<li>Soil.Config</li>
+<li>Soil.Stack</li>
+<li>Soil.View</li>
+</ul><h2>Author</h2>
 
 <p>mach3ss</p>
 
