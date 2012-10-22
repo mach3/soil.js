@@ -1,40 +1,64 @@
-var soil = window.soil || {};
+
+/**
+ * Extend prototype
+ */
+
+if(! Function.prototype.scope){
+	Function.prototype.scope = function(target){
+		var self = this;
+		return function(){
+			self.apply(target, arguments);
+		}
+	};
+}
 
 
 /**
- * soil.fn (utility functions)
+ * Soil
  */
-soil.fn = {
-	isObject : function(obj){
+
+var Soil = window.Soil || {};
+(function(){
+	this.isObject = function(obj){
 		return Object.prototype.toString.call(obj) === "[object Object]";
-	},
-	has : function(key, obj){
+	};
+
+	this.has = function(key, obj){
 		return obj.hasOwnProperty(key);
-	}
-};
+	},
+	this.rebase = function(obj){
+		return $.extend(true, {}, obj);
+	};
+	this.render = function(template, vars){
+		return template.replace(
+			/{{(.+?)}}/g,
+			function(a, b){
+				return vars[b] || "";
+			}
+		);
+	};
+	this.extend = function(){
+		var args, base, obj, i;
+		args = arguments;
+		base = [].shift.call(args).prototype;
+		for(i=0; i<args.length; i+=1){
+			obj = $.isFunction(args[i]) ? args[i].prototype : args[i];
+			base = $.extend(true, base, obj);
+		}
+	};
+}).call(Soil);
 
 
 /**
- * soil.extend
- */
-soil.extend = function(){
-	var args, base, i;
-	args = arguments;
-	base = [].shift.call(args).prototype;
-	for(i=0; i<args.length; i+=1){
-		base = $.extend(true, base, args[i].prototype);
-	}
-};
-
-
-/**
- * soil.Events
+ * Soil.Events
  * - set and remove event handler for the instance
  * - fire the event
  */
-soil.Events = function(){};
+
+Soil.Events = function(){};
 (function(){
 
+	this.type = "Events";
 	this._events = {};
 	this._eventsInit = false;
 
@@ -45,7 +69,7 @@ soil.Events = function(){};
 	 * @return Boolean
 	 */
 	this.hasEvent = function(type){
-		return soil.fn.has(type, this._events) && this._events[type].length > 0;
+		return Soil.has(type, this._events) && this._events[type].length > 0;
 	};
 
 	/**
@@ -101,16 +125,17 @@ soil.Events = function(){};
 		return this;
 	};
 
-}).call(soil.Events.prototype);
+}).call(Soil.Events.prototype);
 
 
 /**
- * soil.Config
+ * Soil.Config
  * - configure options
  */
-soil.Config = function(){};
+Soil.Config = function(){};
 (function(){
 
+	this.type = "Config";
 	this.option = {};
 	this._optionInit = false;
 
@@ -129,10 +154,9 @@ soil.Config = function(){};
 
 		self = this;
 		args = arguments;
-		// this.option = $.extend({}, this.option);
 		a = args[0];
 		b = args[1];
-		has = soil.fn.has(a, this.option);
+		has = Soil.has(a, this.option);
 
 		if(! this._optionInit){
 			this.option = $.extend({}, this.option);
@@ -142,7 +166,7 @@ soil.Config = function(){};
 		if(typeof(a) === "undefined"){
 			return this.option;
 		}
-		else if(soil.fn.isObject(a)){
+		else if(Soil.isObject(a)){
 			$.each(a, function(key, value){
 				self.config(key, value);
 			});
@@ -151,25 +175,27 @@ soil.Config = function(){};
 		else if(typeof(b) === "undefined"){
 			return has ? this.option[a] : null;
 		}
-		else if(soil.fn.has(a, this.option)){
+		else if(Soil.has(a, this.option)){
 			this.option[a] = b;
 			return this;
 		}
 	};
 
-}).call(soil.Config.prototype);
+}).call(Soil.Config.prototype);
 
 
 /**
- * soil.Model
+ * Soil.Attributes
  * - get and set attributes
  * - save and validate methods, but empty
  */
-soil.Model = function(){};
+Soil.Attributes = function(){};
 (function(){
 
+	this.type = "Attributes";
 	this.attr = {};
 	this._attrInit = false;
+	this._attrLastChanged = null;
 
 	/**
 	 * Set attribute
@@ -181,7 +207,7 @@ soil.Model = function(){};
 	 * @return self
 	 */
 	this.set = function(){
-		var self, args;
+		var self, args, changed;
 
 		self = this;
 		args = arguments;
@@ -190,13 +216,19 @@ soil.Model = function(){};
 			this.attr = $.extend({}, this.attr);
 			this._attrInit = true;
 		}
-		if(soil.fn.isObject(args[0])){
+		if(Soil.isObject(args[0])){
 			$.each(args[0], function(key, value){
 				self.set(key, value);
 			});
 		}
-		else if(soil.fn.has(args[0], this.attr)){
-			this.attr[args[0]] = args[1];
+		else if(Soil.has(args[0], this.attr)){
+			if(this.attr[args[0]] != args[1]){
+				this.attr[args[0]] = args[1];
+				this._attrLastChanged = args[0];
+				if(this.EVENT_CHANGE && $.isFunction(this.trigger)){
+					this.trigger(this.EVENT_CHANGE);
+				}
+			}
 		}
 		return this;
 	};
@@ -212,28 +244,35 @@ soil.Model = function(){};
 		if(typeof(key) === "undefined"){
 			return this.attr;
 		}
-		else if(soil.fn.has(key, this.attr)){
+		else if(Soil.has(key, this.attr)){
 			return this.attr[key];
 		}
 		return null;
 	};
 
-	this.validate = function(){
-	};
+}).call(Soil.Attributes.prototype);
 
-	this.save = function(){
-	};
+/**
+ * Soil.Model
+ * - Soil.Events + Soil.Attributes
+ */
+Soil.Model = function(){};
+Soil.extend(Soil.Model, Soil.Events, Soil.Attributes);
+(function(){
 
-}).call(soil.Model.prototype);
+	this.type = "Model";
+	this.EVENT_CHANGE = "change";
+
+}).call(Soil.Model.prototype);
 
 
 /**
- * soil.Stack
+ * Soil.Stack
  * - data collection
  * - add and get values
  * - remove value by index or condition
  */
-soil.Stack = function(){};
+Soil.Stack = function(){};
 (function(){
 
 	this._stack = [];
@@ -262,13 +301,13 @@ soil.Stack = function(){};
 	};
 
 	/**
-	 * Get the value
+	 * Fetch the value
 	 * - if an argument is not numeric, return all values
 	 * 
 	 * @param Integer index
 	 * @return Mixed || Array
 	 */
-	this.get = function(index){
+	this.fetch = function(index){
 		if(typeof(index) === "number"){
 			return this._stack[parseInt(index, 10)];
 		} else {
@@ -331,7 +370,7 @@ soil.Stack = function(){};
 	 * @return Mixed || undefined
 	 */
 	this.current = function(){
-		return this.get(this._stackIndex);
+		return this.fetch(this._stackIndex);
 	};
 
 	/**
@@ -373,4 +412,45 @@ soil.Stack = function(){};
 		return this;
 	};
 
-}).call(soil.Stack.prototype);
+}).call(Soil.Stack.prototype);
+
+
+/**
+ * Soil.View
+ * - This is very cheap and has minimum features
+ * - You'd better to use other template engine, jQuery.tmpl or Mustache or something ...
+ */
+
+Soil.View = function(){};
+Soil.extend(Soil.View, Soil.Attributes);
+(function(){
+
+	this._template = null,
+
+	/**
+	 * Set or get template
+	 * 
+	 * @param String template
+	 * @return Mixed
+	 */
+	this.template = function(template){
+		if(typeof template === "string"){
+			this._template = template.toString();
+			return this;
+		}
+		return this._template;
+	},
+
+	/**
+	 * Get the rendered string
+	 * - if does not have "attr" arg, use this.attr
+	 * 
+	 * @param Object attr (optional)
+	 * @return String
+	 */
+	this.render = function(attr){
+		attr = attr || this.get();
+		return Soil.render(this._template, attr);
+	}
+
+}).call(Soil.View.prototype);

@@ -3,8 +3,8 @@ module.exports = function(grunt){
 	grunt.initConfig({
 
 		concat : {
-			"dist/soil.js" : ["src/header.js", "src/soil.js"],
-			"dist/soil.min.js" : ["src/header.js", "src/soil.min.js"]
+			"dist/soil.js" : ["src/intro.js", "src/soil.js"],
+			"dist/soil.min.js" : ["src/intro.js", "src/soil.min.js"]
 		},
 
 		min : {

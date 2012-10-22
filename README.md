@@ -13,17 +13,17 @@ The basic prototype collection for class base programming with JavaScript, jQuer
 
 ## Usage
 
-### soil.Events
+### Soil.Events
 
 First of all, define the "Foo" class as below.
-Extend the "soil.Events" using "soil.extend()".
+Extend the "Soil.Events" using "Soil.extend()".
 
 ```js
 var Foo = function(){
 	// Constructor
 };
 // Extend the Event's prototype
-soil.extend(Foo, soil.Events);
+Soil.extend(Foo, Soil.Events);
 
 // Set your own features
 Foo.prototype.foo = "bar";
@@ -44,20 +44,18 @@ f.off("test", handler); // unregister event listener
 f.trigger("test"); // nothing is happend
 ```
 
-### soil.Model
+### Soil.Model
 
-This is example for "soil.Model".
+This is example for "Soil.Model".
 set(), get() is available.
-
-soil.Model has also save() and validate(), but they are empty function.
-Then you have to write your own save method by yourself.
+And also on(), trigger() of soil.Events is available.
 
 ```js
 var Person = function(){
 	// Constructor
 };
 // can extend multiple classes
-soil.extend(Person, soil.Model, soil.Events);
+Soil.extend(Person, Soil.Model);
 
 // Set your own attribute
 Person.prototype.attr = {
@@ -65,23 +63,22 @@ Person.prototype.attr = {
 	age : null,
 	gender : null
 };
-
-// Your own save() method
-Person.prototype.save = function(){
-};
 ```
 
 And initialize with "new",
-then features of soil.Model and soil.Events are available now.
+then features of Soil.Model and Soil.Events are available now.
 
 ```js
 var p = new Person;
 
+p.on("change", function(){
+	// "change" event will be fired when something changed.
+	console.log("something has been changed");
+});
+
 p.set("name", "john");
 p.set("age", 18);
 p.set("gender", "male");
-
-p.save(); // somwthing will be happend
 ```
 
 ```js
@@ -101,7 +98,10 @@ p.get(); // => {name:"john", age:18, gender:"male"}
 
 ### Other Classes
 
-soil.Config, soil.Stack is available.
+- Soil.Attributes
+- Soil.Config
+- Soil.Stack
+- Soil.View
 
 ## Author
 

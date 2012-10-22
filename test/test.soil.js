@@ -1,266 +1,364 @@
 
+(function(){
 
-// soil.fn
-describe("soil.fn", function(){
 
-	it("isObject return if object or not", function(){
-		var m = soil.fn.isObject;
+	// Soil.fn
+	describe("Soil", function(){
 
-		expect(m({key:"value"})).toEqual(true);
-		expect(m("foo")).toEqual(false);
-		expect(m([1,2,3])).toEqual(false);
-		expect(m(123)).toEqual(false);
-		expect(m(true)).toEqual(false);
-		expect(m(false)).toEqual(false);
-	});
+		it("isObject(obj) : return if object or not", function(){
+			var m = Soil.isObject;
 
-	it("has is aliase of hasOwnProperty", function(){
-		var o = { a : 1, b : 2 };
-		expect(soil.fn.has("a", o)).toEqual(true);
-		expect(soil.fn.has("z", o)).toEqual(false);
-	});
-
-});
-
-// soil.extend
-describe("soil.extend", function(){
-
-	it("extend their prototype", function(){
-		var A = function(){};
-		A.prototype.foo = 1;
-		A.prototype.bar = 2;
-
-		var B = function(){};
-		soil.extend(B, A);
-		B.prototype.foo = 3;
-
-		var C = function(){};
-		soil.extend(C, A, B);
-		C.prototype.bar = 4;
-		C.prototype.hoge = 5;
-
-		var c = new C;
-
-		expect({
-			foo  : c.foo,
-			bar : c.bar,
-			hoge : c.hoge
-		}).toEqual({
-			foo : 3,
-			bar : 4,
-			hoge : 5
+			expect(m({key:"value"})).toEqual(true);
+			expect(m("foo")).toEqual(false);
+			expect(m([1,2,3])).toEqual(false);
+			expect(m(123)).toEqual(false);
+			expect(m(true)).toEqual(false);
+			expect(m(false)).toEqual(false);
 		});
-	});
-});
 
-
-// soil.Events
-describe("soil.Events", function(){
-
-	var C, c;
-	C = function(){};
-	soil.extend(C, soil.Events);
-
-	beforeEach(function(){
-		c = new C;
-	});
-
-	afterEach(function(){
-		c = null;
-	});
-
-	it("register by on(), fire by trigger()", function(){
-		var foo = 0;
-		c.on("test", function(){
-			foo += 1;
+		it("has(key) : aliase of hasOwnProperty", function(){
+			var o, m;
+			o = { a : 1, b : 2 };
+			m = Soil.has;
+			expect(m("a", o)).toEqual(true);
+			expect(m("z", o)).toEqual(false);
 		});
-		c.trigger("test").trigger("test");
-		expect(foo).toEqual(2);
-	});
 
-	it("can register multiple handlers", function(){
-		var foo = 0,
-			handler = {
-				a : function(){
-					foo += 1;
-				},
-				b : function(){
-					foo += 2;
-				}
+		it("rebase(obj) : for object prop problem", function(){
+			var Foo = function(){};
+			Foo.prototype.data = {
+				hoge : "fuga",
+				foo : "bar"
 			};
 
-		c.on("test", handler.a);
-		c.on("test", handler.b);
-		c.trigger("test").trigger("test");
-		expect(foo).toEqual(6);
+			var a = new Foo;
+			a.data = Soil.rebase(a.data);
+			var b = new Foo;
+			b.data = Soil.rebase(b.data);
+
+			b.data.hoge = "fugafuga";
+			b.data.foo = "barbar";
+
+			expect(a.data.hoge).toEqual("fuga");
+			expect(a.data.foo).toEqual("bar");
+		});
+
+		it("render(template, vars) : render the template by vars", function(){
+			var template = "{{foo}} is {{bar}}";
+			var vars = { foo : "FOO", bar : "BAR" };
+
+			expect(Soil.render(template, vars)).toEqual("FOO is BAR");
+		});
+
+		it("extend(Function|Object, Function|Object, ...) : extend their props", function(){
+			var A = function(){};
+			A.prototype.foo = 1;
+			A.prototype.bar = 2;
+
+			var B = function(){};
+			Soil.extend(B, A);
+			B.prototype.foo = 3;
+
+			var C = function(){};
+			Soil.extend(C, A, B);
+			C.prototype.bar = 4;
+			C.prototype.hoge = 5;
+
+			var c = new C;
+
+			expect({
+				foo  : c.foo,
+				bar : c.bar,
+				hoge : c.hoge
+			}).toEqual({
+				foo : 3,
+				bar : 4,
+				hoge : 5
+			});
+		});
+
 	});
 
-	it("remove handler by off()", function(){
-		var foo = 0,
-			handler = {
-				a : function(){
-					foo += 1;
-				},
-				b : function(){
-					foo += 2;
-				}
-			};
 
-		c.on("test", handler.a);
-		c.on("test", handler.b);
-		c.trigger("test").trigger("test"); // 6
-		c.off("test", handler.b);
-		c.trigger("test").trigger("test"); // 8
+	// Soil.Events
+	describe("Soil.Events", function(){
 
-		expect(foo).toEqual(8);
+		var C, c;
+		C = function(){};
+		Soil.extend(C, Soil.Events);
+
+		beforeEach(function(){
+			c = new C;
+		});
+
+		afterEach(function(){
+			c = null;
+		});
+
+		it("on(type, handler), trigger(type) : register handler, fire it", function(){
+			var foo = 0;
+			c.on("test", function(){
+				foo += 1;
+			});
+			c.trigger("test").trigger("test");
+			expect(foo).toEqual(2);
+		});
+
+		it("on(type, handler) : can register multiple handlers", function(){
+			var foo = 0,
+				handler = {
+					a : function(){
+						foo += 1;
+					},
+					b : function(){
+						foo += 2;
+					}
+				};
+
+			c.on("test", handler.a);
+			c.on("test", handler.b);
+			c.trigger("test").trigger("test");
+			expect(foo).toEqual(6);
+		});
+
+		it("off(type, handler) : remove handler", function(){
+			var foo = 0,
+				handler = {
+					a : function(){
+						foo += 1;
+					},
+					b : function(){
+						foo += 2;
+					}
+				};
+
+			c.on("test", handler.a);
+			c.on("test", handler.b);
+			c.trigger("test").trigger("test"); // 6
+			c.off("test", handler.b);
+			c.trigger("test").trigger("test"); // 8
+
+			expect(foo).toEqual(8);
+		});
 	});
-});
 
-// soil.Config
-describe("soil.Config", function(){
+	// Soil.Config
+	describe("Soil.Config", function(){
 
-	var C, c;
-	C = function(){};
-	soil.extend(C, soil.Config);
-	C.prototype.option = {
-		hoge : null,
-		fuga : null
-	};
-
-	beforeEach(function(){
-		c = new C;
-	});
-
-	it("set or get the option value by config()", function(){
-		c.config("hoge", 1);
-		c.config("fuga", 2);
-
-		expect(c.config("hoge")).toEqual(1);
-		expect(c.config("fuga")).toEqual(2);
-	});
-
-	it("set or get the option with {}", function(){
-		var o = {
-			hoge : 1,
-			fuga : 2
+		var C, c;
+		C = function(){};
+		Soil.extend(C, Soil.Config);
+		C.prototype.option = {
+			hoge : null,
+			fuga : null
 		};
-		c.config(o);
-		expect(c.config()).toEqual(o);
-	});
-});
 
-// soil.Model
-describe("soil.Model", function(){
-
-	var C, c;
-	C = function(){};
-	soil.extend(C, soil.Model);
-	C.prototype.attr = {
-		foo : 1,
-		bar : true
-	};
-
-	beforeEach(function(){
-		c = new C;
-	});
-
-	it("has set(key, value) and get(key)", function(){
-		c.set("foo", 2);
-		c.set("bar", false);
-
-		expect(c.get("foo")).toEqual(2);
-		expect(c.get("bar")).toEqual(false);
-	});
-
-	it("set() can be passed Object", function(){
-		c.set({
-			foo : 2,
-			bar : false
+		beforeEach(function(){
+			c = new C;
 		});
 
-		expect(c.get("foo")).toEqual(2);
-		expect(c.get("bar")).toEqual(false);
-	});
+		it("config(key, [value]) : set or get the option value", function(){
+			c.config("hoge", 1);
+			c.config("fuga", 2);
 
-	it("get() can return all attribute", function(){
-		expect(c.get()).toEqual(C.prototype.attr);
-	});
-});
-
-// soil.Stack
-describe("soil.Stack", function(){
-
-	var Stack, data, c;
-	Stack = function(){};
-	soil.extend(Stack, soil.Stack);
-	data = ["hoge", "fuga", "foo", "bar"];
-
-	beforeEach(function(){
-		c = new Stack;
-		c.add.apply(c, data);
-	});
-
-	it("has add() and get(index)", function(){
-		expect(c.get(3)).toEqual("bar");
-	});
-
-	it("get() return all stack data", function(){
-		expect(c.get()).toEqual(data);
-	});
-
-	it("index() can set or get the index", function(){
-		expect(c.index()).toEqual(0);
-		c.index(2);
-		expect(c.index()).toEqual(2);
-		c.index(100); // not exists, not changed
-		expect(c.index()).toEqual(2);
-	});
-
-	it("next() advances the index", function(){
-		expect(c.next()).toEqual(1);
-		expect(c.next()).toEqual(2);
-		expect(c.next()).toEqual(3);
-		expect(c.next()).toEqual(false);
-	});
-
-	it("prev() rewind the index", function(){
-		c.index(3);
-		expect(c.prev()).toEqual(2);
-		expect(c.prev()).toEqual(1);
-		expect(c.prev()).toEqual(0);
-		expect(c.prev()).toEqual(false);
-	});
-
-	it("rewind() set the index to the first", function(){
-		c.index(3);
-		c.rewind();
-		expect(c.index()).toEqual(0);
-	});
-
-	it("current() can get the current value", function(){
-		expect(c.current()).toEqual(data[0]);
-		c.index(2);
-		expect(c.current()).toEqual(data[2]);
-	});
-
-	it("each() iterate over the values", function(){
-		var s = "";
-		c.each(function(index, value){
-			s += value;
+			expect(c.config("hoge")).toEqual(1);
+			expect(c.config("fuga")).toEqual(2);
 		});
-		expect(s).toEqual(c.get().join(""));
-	});
 
-	it("remove(index) remove the value by index", function(){
-		c.remove(2);
-		expect(c.get()).toEqual(["hoge", "fuga", "bar"]);
-	});
-
-	it("remove(function) remove by condition", function(){
-		c.remove(function(value){
-			return (value === "hoge" || value === "foo")
+		it("config({}) : set or get the option with {}", function(){
+			var o = {
+				hoge : 1,
+				fuga : 2
+			};
+			c.config(o);
+			expect(c.config()).toEqual(o);
 		});
-		expect(c.get()).toEqual(["fuga", "bar"]);
 	});
-});
 
+	// Soil.Attributes
+	describe("Soil.Attributes", function(){
+
+		var C, c;
+		C = function(){};
+		Soil.extend(C, Soil.Attributes);
+		C.prototype.attr = {
+			foo : 1,
+			bar : true
+		};
+
+		beforeEach(function(){
+			c = new C;
+		});
+
+		it("set(key, value), get(key) : set and get attributes", function(){
+			c.set("foo", 2);
+			c.set("bar", false);
+
+			expect(c.get("foo")).toEqual(2);
+			expect(c.get("bar")).toEqual(false);
+		});
+
+		it("set({}) : can recieve object", function(){
+			c.set({
+				foo : 2,
+				bar : false
+			});
+
+			expect(c.get("foo")).toEqual(2);
+			expect(c.get("bar")).toEqual(false);
+		});
+
+		it("get() : return all attribute", function(){
+			expect(c.get()).toEqual(C.prototype.attr);
+		});
+	});
+
+
+	// Soil.Model
+	describe("Soil.Model", function(){
+
+		var C, c;
+		C = function(){};
+		Soil.extend(C, Soil.Model);
+		Soil.extend(C, {
+			attr : {
+				foo : null,
+				bar : null
+			}
+		});
+
+		it("set(key, value), get(key) : from Soil.Attributes", function(){
+			c = new C;
+			c.set("foo", 1);
+			c.set("bar", 2);
+			expect(c.get()).toEqual({foo:1, bar:2});
+		});
+
+		it("on(type, handler), trigger(type) : from Soil.Events", function(){
+			var changed = false;
+			c = new C;
+			c.on("change", function(){
+				changed = true;
+			});
+			c.set("foo", 1);
+			expect(changed).toEqual(true);
+		});
+
+	});
+
+
+	// Soil.Stack
+	describe("Soil.Stack", function(){
+
+		var Stack, data, c;
+		Stack = function(){};
+		Soil.extend(Stack, Soil.Stack);
+		data = ["hoge", "fuga", "foo", "bar"];
+
+		beforeEach(function(){
+			c = new Stack;
+			c.add.apply(c, data);
+		});
+
+		it("has add() and fetch(index)", function(){
+			expect(c.fetch(3)).toEqual("bar");
+		});
+
+		it("get() return all stack data", function(){
+			expect(c.fetch()).toEqual(data);
+		});
+
+		it("index() can set or get the index", function(){
+			expect(c.index()).toEqual(0);
+			c.index(2);
+			expect(c.index()).toEqual(2);
+			c.index(100); // not exists, not changed
+			expect(c.index()).toEqual(2);
+		});
+
+		it("next() advances the index", function(){
+			expect(c.next()).toEqual(1);
+			expect(c.next()).toEqual(2);
+			expect(c.next()).toEqual(3);
+			expect(c.next()).toEqual(false);
+		});
+
+		it("prev() rewind the index", function(){
+			c.index(3);
+			expect(c.prev()).toEqual(2);
+			expect(c.prev()).toEqual(1);
+			expect(c.prev()).toEqual(0);
+			expect(c.prev()).toEqual(false);
+		});
+
+		it("rewind() set the index to the first", function(){
+			c.index(3);
+			c.rewind();
+			expect(c.index()).toEqual(0);
+		});
+
+		it("current() can get the current value", function(){
+			expect(c.current()).toEqual(data[0]);
+			c.index(2);
+			expect(c.current()).toEqual(data[2]);
+		});
+
+		it("each() iterate over the values", function(){
+			var s = "";
+			c.each(function(index, value){
+				s += value;
+			});
+			expect(s).toEqual(c.fetch().join(""));
+		});
+
+		it("remove(index) remove the value by index", function(){
+			c.remove(2);
+			expect(c.fetch()).toEqual(["hoge", "fuga", "bar"]);
+		});
+
+		it("remove(function) remove by condition", function(){
+			c.remove(function(value){
+				return (value === "hoge" || value === "foo")
+			});
+			expect(c.fetch()).toEqual(["fuga", "bar"]);
+		});
+	});
+
+	// Soil.View
+	describe("Soil.View", function(){
+
+		var C, c;
+		C = function(){};
+		Soil.extend(C, Soil.View);
+
+		it("template([template]) : set or get template", function(){
+			var t;
+
+			c = new C;
+			t = "{{foo}}, {{bar}}";
+			c.template("{{foo}}, {{bar}}");
+
+			expect(c.template()).toEqual(t);
+		});
+
+		it("render([vars]) : get rendered string", function(){
+			Soil.extend(C, {
+				attr : {
+					foo : null,
+					bar : null
+				}
+			});
+			c = new C;
+			c.template("{{foo}} is {{bar}}");
+			c.set({
+				foo : "Foo",
+				bar : "Bar"
+			});
+
+			expect(c.render()).toEqual("Foo is Bar");
+			expect(c.render({foo : "FOO", bar : "BAR"})).toEqual("FOO is BAR");
+		});
+
+	});
+
+}());
