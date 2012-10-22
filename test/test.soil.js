@@ -1,8 +1,58 @@
 
 (function(){
 
+	// Extend Prototype
+	describe("prototype", function(){
 
-	// Soil.fn
+		it("Function.prototype.scope()", function(){
+			var Foo = {
+				name : "foo",
+				say : function(){
+					return this.name;
+				}
+			};
+			var Bar = {
+				name : "bar"
+			};
+
+			expect(Foo.say()).toEqual("foo");
+			expect(Foo.say.scope(Bar)()).toEqual("bar");
+		});
+
+		it("Function.prototype.plant()", function(){
+			var A = function(){};
+			A.prototype.foo = 1;
+			A.prototype.bar = 2;
+
+			var B = function(){};
+			B.prototype.foo = 3;
+			B.prototype.hoge = 4;
+
+			var C = function(){};
+			C.prototype.hoge = 5;
+			C.prototype.fuga = 6;
+
+			A.plant(B, C);
+
+			var a = new A;
+
+			expect({
+				foo : a.foo,
+				bar : a.bar,
+				hoge : a.hoge,
+				fuga : a.fuga
+			})
+			.toEqual({
+				foo : 3,
+				bar : 2,
+				hoge : 5,
+				fuga : 6
+			});
+		});
+	});
+
+
+	// Soil
 	describe("Soil", function(){
 
 		it("isObject(obj) : return if object or not", function(){
@@ -50,33 +100,6 @@
 			expect(Soil.render(template, vars)).toEqual("FOO is BAR");
 		});
 
-		it("extend(Function|Object, Function|Object, ...) : extend their props", function(){
-			var A = function(){};
-			A.prototype.foo = 1;
-			A.prototype.bar = 2;
-
-			var B = function(){};
-			Soil.extend(B, A);
-			B.prototype.foo = 3;
-
-			var C = function(){};
-			Soil.extend(C, A, B);
-			C.prototype.bar = 4;
-			C.prototype.hoge = 5;
-
-			var c = new C;
-
-			expect({
-				foo  : c.foo,
-				bar : c.bar,
-				hoge : c.hoge
-			}).toEqual({
-				foo : 3,
-				bar : 4,
-				hoge : 5
-			});
-		});
-
 	});
 
 
@@ -85,7 +108,7 @@
 
 		var C, c;
 		C = function(){};
-		Soil.extend(C, Soil.Events);
+		C.plant(Soil.Events);
 
 		beforeEach(function(){
 			c = new C;
@@ -142,12 +165,13 @@
 		});
 	});
 
+
 	// Soil.Config
 	describe("Soil.Config", function(){
 
 		var C, c;
 		C = function(){};
-		Soil.extend(C, Soil.Config);
+		C.plant(Soil.Config);
 		C.prototype.option = {
 			hoge : null,
 			fuga : null
@@ -175,12 +199,13 @@
 		});
 	});
 
+
 	// Soil.Attributes
 	describe("Soil.Attributes", function(){
 
 		var C, c;
 		C = function(){};
-		Soil.extend(C, Soil.Attributes);
+		C.plant(Soil.Attributes);
 		C.prototype.attr = {
 			foo : 1,
 			bar : true
@@ -219,8 +244,8 @@
 
 		var C, c;
 		C = function(){};
-		Soil.extend(C, Soil.Model);
-		Soil.extend(C, {
+		C.plant(Soil.Model);
+		C.plant({
 			attr : {
 				foo : null,
 				bar : null
@@ -250,13 +275,13 @@
 	// Soil.Stack
 	describe("Soil.Stack", function(){
 
-		var Stack, data, c;
-		Stack = function(){};
-		Soil.extend(Stack, Soil.Stack);
+		var C, data, c;
+		C = function(){};
+		C.plant(Soil.Stack);
 		data = ["hoge", "fuga", "foo", "bar"];
 
 		beforeEach(function(){
-			c = new Stack;
+			c = new C;
 			c.add.apply(c, data);
 		});
 
@@ -324,12 +349,13 @@
 		});
 	});
 
+
 	// Soil.View
 	describe("Soil.View", function(){
 
 		var C, c;
 		C = function(){};
-		Soil.extend(C, Soil.View);
+		C.plant(Soil.View);
 
 		it("template([template]) : set or get template", function(){
 			var t;
@@ -342,7 +368,7 @@
 		});
 
 		it("render([vars]) : get rendered string", function(){
-			Soil.extend(C, {
+			C.plant({
 				attr : {
 					foo : null,
 					bar : null

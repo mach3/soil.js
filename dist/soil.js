@@ -20,29 +20,39 @@ if(! Function.prototype.scope){
 	Function.prototype.scope = function(target){
 		var self = this;
 		return function(){
-			self.apply(target, arguments);
+			return self.apply(target, arguments);
 		}
 	};
 }
-
+if(! Function.prototype.plant){
+	Function.prototype.plant = function(){
+		var args, obj, i;
+		args = arguments;
+		for(i=0; i<args.length; i+=1){
+			obj = $.isFunction(args[i]) ? args[i].prototype : args[i];
+			this.prototype = $.extend(true, this.prototype, obj);
+		}
+		return this;
+	};
+}
 
 /**
  * Soil
  */
 
 var Soil = window.Soil || {};
-(function(){
-	this.isObject = function(obj){
+(function(fn){
+	fn.isObject = function(obj){
 		return Object.prototype.toString.call(obj) === "[object Object]";
 	};
 
-	this.has = function(key, obj){
+	fn.has = function(key, obj){
 		return obj.hasOwnProperty(key);
 	},
-	this.rebase = function(obj){
+	fn.rebase = function(obj){
 		return $.extend(true, {}, obj);
 	};
-	this.render = function(template, vars){
+	fn.render = function(template, vars){
 		return template.replace(
 			/{{(.+?)}}/g,
 			function(a, b){
@@ -50,16 +60,7 @@ var Soil = window.Soil || {};
 			}
 		);
 	};
-	this.extend = function(){
-		var args, base, obj, i;
-		args = arguments;
-		base = [].shift.call(args).prototype;
-		for(i=0; i<args.length; i+=1){
-			obj = $.isFunction(args[i]) ? args[i].prototype : args[i];
-			base = $.extend(true, base, obj);
-		}
-	};
-}).call(Soil);
+}(Soil));
 
 
 /**
@@ -69,11 +70,11 @@ var Soil = window.Soil || {};
  */
 
 Soil.Events = function(){};
-(function(){
+(function(fn){
 
-	this.type = "Events";
-	this._events = {};
-	this._eventsInit = false;
+	fn.type = "Events";
+	fn._events = {};
+	fn._eventsInit = false;
 
 	/**
 	 * Get if having the event type
@@ -81,7 +82,7 @@ Soil.Events = function(){};
 	 * @param String type
 	 * @return Boolean
 	 */
-	this.hasEvent = function(type){
+	fn.hasEvent = function(type){
 		return Soil.has(type, this._events) && this._events[type].length > 0;
 	};
 
@@ -92,7 +93,7 @@ Soil.Events = function(){};
 	 * @param Function handler
 	 * @return self
 	 */
-	this.on = function(type, handler){
+	fn.on = function(type, handler){
 		if(! this._eventsInit){
 			this._events = $.extend({}, this._events);
 			this._eventsInit = true;
@@ -111,7 +112,7 @@ Soil.Events = function(){};
 	 * @param Function handler
 	 * @return self
 	 */
-	this.off = function(type, handler){
+	fn.off = function(type, handler){
 		if(this.hasEvent(type)){
 			this._events[type] = $.map(this._events[type], function(f){
 				return handler === f ? null : f;
@@ -125,7 +126,7 @@ Soil.Events = function(){};
 	 *
 	 * @param String type
 	 */
-	this.trigger = function(type){
+	fn.trigger = function(type){
 		var i;
 		if(this.hasEvent(type)){
 			for(i=0; i<this._events[type].length; i+=1){
@@ -138,7 +139,7 @@ Soil.Events = function(){};
 		return this;
 	};
 
-}).call(Soil.Events.prototype);
+}(Soil.Events.prototype));
 
 
 /**
@@ -146,11 +147,11 @@ Soil.Events = function(){};
  * - configure options
  */
 Soil.Config = function(){};
-(function(){
+(function(fn){
 
-	this.type = "Config";
-	this.option = {};
-	this._optionInit = false;
+	fn.type = "Config";
+	fn.option = {};
+	fn._optionInit = false;
 
 	/**
 	 * Set or get the option
@@ -162,7 +163,7 @@ Soil.Config = function(){};
 	 * @param Mixed value (optional)
 	 * @return Mixed
 	 */
-	this.config = function(){
+	fn.config = function(){
 		var self, args, a, b, has;
 
 		self = this;
@@ -194,7 +195,7 @@ Soil.Config = function(){};
 		}
 	};
 
-}).call(Soil.Config.prototype);
+}(Soil.Config.prototype));
 
 
 /**
@@ -203,12 +204,12 @@ Soil.Config = function(){};
  * - save and validate methods, but empty
  */
 Soil.Attributes = function(){};
-(function(){
+(function(fn){
 
-	this.type = "Attributes";
-	this.attr = {};
-	this._attrInit = false;
-	this._attrLastChanged = null;
+	fn.type = "Attributes";
+	fn.attr = {};
+	fn._attrInit = false;
+	fn._attrLastChanged = null;
 
 	/**
 	 * Set attribute
@@ -219,7 +220,7 @@ Soil.Attributes = function(){};
 	 * @param Mixed value (optional)
 	 * @return self
 	 */
-	this.set = function(){
+	fn.set = function(){
 		var self, args, changed;
 
 		self = this;
@@ -253,7 +254,7 @@ Soil.Attributes = function(){};
 	 * @param String key
 	 * @return Mixed
 	 */
-	this.get = function(key){
+	fn.get = function(key){
 		if(typeof(key) === "undefined"){
 			return this.attr;
 		}
@@ -263,20 +264,21 @@ Soil.Attributes = function(){};
 		return null;
 	};
 
-}).call(Soil.Attributes.prototype);
+}(Soil.Attributes.prototype));
+
 
 /**
  * Soil.Model
  * - Soil.Events + Soil.Attributes
  */
 Soil.Model = function(){};
-Soil.extend(Soil.Model, Soil.Events, Soil.Attributes);
-(function(){
+Soil.Model.plant(Soil.Events, Soil.Attributes);
+(function(fn){
 
-	this.type = "Model";
-	this.EVENT_CHANGE = "change";
+	fn.type = "Model";
+	fn.EVENT_CHANGE = "change";
 
-}).call(Soil.Model.prototype);
+}(Soil.Model.prototype));
 
 
 /**
@@ -286,11 +288,11 @@ Soil.extend(Soil.Model, Soil.Events, Soil.Attributes);
  * - remove value by index or condition
  */
 Soil.Stack = function(){};
-(function(){
+(function(fn){
 
-	this._stack = [];
-	this._stackIndex = 0;
-	this._stackInit = false;
+	fn._stack = [];
+	fn._stackIndex = 0;
+	fn._stackInit = false;
 
 	/**
 	 * Add value(s)
@@ -298,7 +300,7 @@ Soil.Stack = function(){};
 	 * @param Mixed value
 	 * @return self
 	 */
-	this.add = function(){
+	fn.add = function(){
 		var self, args, i;
 		self = this;
 		args = arguments;
@@ -320,7 +322,7 @@ Soil.Stack = function(){};
 	 * @param Integer index
 	 * @return Mixed || Array
 	 */
-	this.fetch = function(index){
+	fn.fetch = function(index){
 		if(typeof(index) === "number"){
 			return this._stack[parseInt(index, 10)];
 		} else {
@@ -335,7 +337,7 @@ Soil.Stack = function(){};
 	 * @param Integer index
 	 * @return Integer || Boolean
 	 */
-	this.index = function(index){
+	fn.index = function(index){
 		if(typeof(index) === "number"){
 			index = parseInt(index, 10);
 			if(index >= 0 && index < this._stack.length){
@@ -354,7 +356,7 @@ Soil.Stack = function(){};
 	 *
 	 * @return self
 	 */
-	this.rewind = function(){
+	fn.rewind = function(){
 		this.index(0);
 		return this;
 	};
@@ -364,7 +366,7 @@ Soil.Stack = function(){};
 	 *
 	 * @return Integer || Boolean
 	 */
-	this.next = function(){
+	fn.next = function(){
 		return this.index(this._stackIndex + 1);
 	};
 
@@ -373,7 +375,7 @@ Soil.Stack = function(){};
 	 *
 	 * @return Integer || Boolean
 	 */
-	this.prev = function(){
+	fn.prev = function(){
 		return this.index(this._stackIndex - 1);
 	};
 
@@ -382,7 +384,7 @@ Soil.Stack = function(){};
 	 *
 	 * @return Mixed || undefined
 	 */
-	this.current = function(){
+	fn.current = function(){
 		return this.fetch(this._stackIndex);
 	};
 
@@ -392,7 +394,7 @@ Soil.Stack = function(){};
 	 * @param Function callback
 	 * @return self
 	 */
-	this.each = function(callback){
+	fn.each = function(callback){
 		$.each(this._stack, callback);
 		return this;
 	};
@@ -403,7 +405,7 @@ Soil.Stack = function(){};
 	 * @param Integer index || Function callback
 	 * @return self
 	 */
-	this.remove = function(cond){
+	fn.remove = function(cond){
 		var stack = [];
 		if(typeof(cond) === "number"){
 			cond = parseInt(cond, 10);
@@ -425,7 +427,7 @@ Soil.Stack = function(){};
 		return this;
 	};
 
-}).call(Soil.Stack.prototype);
+}(Soil.Stack.prototype));
 
 
 /**
@@ -435,10 +437,10 @@ Soil.Stack = function(){};
  */
 
 Soil.View = function(){};
-Soil.extend(Soil.View, Soil.Attributes);
-(function(){
+Soil.View.plant(Soil.Attributes);
+(function(fn){
 
-	this._template = null,
+	fn._template = null,
 
 	/**
 	 * Set or get template
@@ -446,7 +448,7 @@ Soil.extend(Soil.View, Soil.Attributes);
 	 * @param String template
 	 * @return Mixed
 	 */
-	this.template = function(template){
+	fn.template = function(template){
 		if(typeof template === "string"){
 			this._template = template.toString();
 			return this;
@@ -461,9 +463,10 @@ Soil.extend(Soil.View, Soil.Attributes);
 	 * @param Object attr (optional)
 	 * @return String
 	 */
-	this.render = function(attr){
+	fn.render = function(attr){
 		attr = attr || this.get();
 		return Soil.render(this._template, attr);
 	}
 
-}).call(Soil.View.prototype);
+}(Soil.View.prototype));
+
