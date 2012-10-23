@@ -439,4 +439,86 @@
 
 	});
 
+	describe("Soil.HashChange", function(){
+
+		it("start() : start to watch the hash change event", function(){
+
+			var c, done = 0, data = [];
+
+			location.hash = "";
+
+			setTimeout(function(){
+				c = new Soil.HashChange;
+				c.on(c.EVENT_HASH_CHANGE, function(){
+					data.push(this.getHash());
+				});
+				c.start();
+			}, 100);
+			setTimeout(function(){ 
+				location.hash = "hoge" 
+				done += 1;
+			}, 200);
+			setTimeout(function(){ 
+				location.hash = "fuga" 
+				done += 1;
+			}, 300);
+			setTimeout(function(){
+				location.hash = "foo"
+				done += 1;
+			}, 400);
+			setTimeout(function(){
+				done += 1;
+			}, 500);
+
+			waitsFor(function(){
+				return done === 4;
+			});
+
+			runs(function(){
+				expect(data).toEqual(["#hoge", "#fuga", "#foo"]);
+			});
+		});
+
+		it("fallback onhashchange by timeout", function(){
+
+			var c, done = 0, data = [];
+
+			location.hash = "";
+
+			setTimeout(function(){
+				c = new Soil.HashChange;
+				c.config("support", false);
+				c.on(c.EVENT_HASH_CHANGE, function(){
+					data.push(this.getHash());
+				});
+				c.start();
+			}, 100);
+
+			setTimeout(function(){ 
+				location.hash = "hoge" 
+				done += 1;
+			}, 200);
+			setTimeout(function(){ 
+				location.hash = "fuga" 
+				done += 1;
+			}, 300);
+			setTimeout(function(){
+				location.hash = "foo"
+				done += 1;
+			}, 400);
+			setTimeout(function(){
+				done += 1;
+			}, 500);
+
+			waitsFor(function(){
+				return done === 4;
+			});
+
+			runs(function(){
+				expect(data).toEqual(["#hoge", "#fuga", "#foo"]);
+			});
+		});
+
+	});
+
 }());

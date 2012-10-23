@@ -19,7 +19,8 @@ module.exports = function(grunt){
 					"src/soil/attributes.js",
 					"src/soil/model.js",
 					"src/soil/stack.js",
-					"src/soil/view.js"
+					"src/soil/view.js",
+					"src/soil/hashchange.js"
 				],
 				dest : "src/soil.js"
 			},
