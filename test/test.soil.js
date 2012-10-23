@@ -418,6 +418,25 @@
 			expect(c.render({foo : "FOO", bar : "BAR"})).toEqual("FOO is BAR");
 		});
 
+		it("if has Mustache, use Mustache.render()", function(){
+			if(Mustache){
+				C.plant({
+					attr : {
+						bool : null,
+						message : null
+					}
+				});
+				c = new C;
+				c.template("{{#bool}}<strong>{{message}}</strong>{{/bool}}");
+				c.set({
+					bool : true,
+					message : "Hello, World !"
+				});
+				expect(c.render()).toEqual("<strong>Hello, World !</strong>");
+				expect(c.render({bool:false, message:"foo"})).toEqual("");
+			}
+		});
+
 	});
 
 }());

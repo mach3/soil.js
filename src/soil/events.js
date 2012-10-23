@@ -3,7 +3,6 @@
  * - set and remove event handler for the instance
  * - fire the event
  */
-
 Soil.Events = function(){};
 (function(fn){
 

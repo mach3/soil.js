@@ -25,6 +25,9 @@ var Soil = window.Soil || {};
 
 	// Render string with template and vars
 	fn.render = function(template, vars){
+		if(Mustache){
+			return Mustache.render(template, vars);
+		}
 		return template.replace(
 			/{{(.+?)}}/g,
 			function(a, b){

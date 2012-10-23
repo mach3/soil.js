@@ -1,9 +1,8 @@
 /**
  * Soil.View
- * - This is very cheap and has minimum features
- * - You'd better to use other template engine, jQuery.tmpl or Mustache or something ...
+ * - This is very cheap and has minimum features by default
+ * - You'd better to import mustache.js, then this use Mustache.render()
  */
-
 Soil.View = function(){};
 Soil.View[Soil.extendMethod](Soil.Attributes);
 (function(fn){
