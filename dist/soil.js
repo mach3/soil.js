@@ -6,11 +6,62 @@
  * - Library for class base programming with JavaScript
  *
  * @author mach3
- * @version 0.9.2
+ * @version 0.9.2.1
  * @require jQuery
  *
  */
 
+/**
+ * Soil Core
+ */
+
+var Soil = window.Soil || {};
+
+(function(fn){
+
+	fn.extendMethod = "plant";
+
+	// Get if obj is object
+	fn.isObject = function(obj){
+		return Object.prototype.toString.call(obj) === "[object Object]";
+	};
+
+	// Aliase to hasOwnProperty
+	fn.has = function(key, obj){
+		return obj.hasOwnProperty(key);
+	},
+
+	// Utility for object prop problem
+	fn.rebase = function(obj){
+		return $.extend(true, {}, obj);
+	};
+
+	// Render string with template and vars
+	fn.render = function(template, vars){
+		return template.replace(
+			/{{(.+?)}}/g,
+			function(a, b){
+				return vars[b] || "";
+			}
+		);
+	};
+
+	// Extend props of object | function's prototype
+	fn.extend = function(){
+		var args, base, obj, i;
+		args = arguments;
+		base = [].shift.call(args).prototype;
+		if($.isFunction(base)){
+			base = base.prototype;
+		}
+		for(i=0; i<args.length; i+=1){
+			obj = $.isFunction(args[i]) ? args[i].prototype : args[i];
+			base = $.extend(true, base, obj);
+		}
+		return base;
+	}
+	
+}(Soil));
 
 /**
  * Extend prototype
@@ -24,44 +75,69 @@ if(! Function.prototype.scope){
 		}
 	};
 }
-if(! Function.prototype.plant){
-	Function.prototype.plant = function(){
-		var args, obj, i;
-		args = arguments;
-		for(i=0; i<args.length; i+=1){
-			obj = $.isFunction(args[i]) ? args[i].prototype : args[i];
-			this.prototype = $.extend(true, this.prototype, obj);
-		}
-		return this;
+
+if(! Function.prototype[Soil.extendMethod]){
+	Function.prototype[Soil.extendMethod] = function(){
+		var args = arguments;
+		[].unshift.call(args, this);
+		Soil.extend.apply(Soil, args);
 	};
 }
 
 /**
- * Soil
+ * Soil.Config
+ * - configure options
  */
-
-var Soil = window.Soil || {};
+Soil.Config = function(){};
 (function(fn){
-	fn.isObject = function(obj){
-		return Object.prototype.toString.call(obj) === "[object Object]";
+
+	fn.type = "Config";
+	fn.option = {};
+	fn._optionInit = false;
+
+	/**
+	 * Set or get the option
+	 * - if has value, set it and return the instance
+	 * - if has no value, return the value
+	 * - if object, set each key and value, return the instance
+	 * 
+	 * @param String key || Object option
+	 * @param Mixed value (optional)
+	 * @return Mixed
+	 */
+	fn.config = function(){
+		var self, args, a, b, has;
+
+		self = this;
+		args = arguments;
+		a = args[0];
+		b = args[1];
+		has = Soil.has(a, this.option);
+
+		if(! this._optionInit){
+			this.option = $.extend({}, this.option);
+			this._optionInit = true;
+		}
+
+		if(typeof(a) === "undefined"){
+			return this.option;
+		}
+		else if(Soil.isObject(a)){
+			$.each(a, function(key, value){
+				self.config(key, value);
+			});
+			return this;
+		}
+		else if(typeof(b) === "undefined"){
+			return has ? this.option[a] : null;
+		}
+		else if(Soil.has(a, this.option)){
+			this.option[a] = b;
+			return this;
+		}
 	};
 
-	fn.has = function(key, obj){
-		return obj.hasOwnProperty(key);
-	},
-	fn.rebase = function(obj){
-		return $.extend(true, {}, obj);
-	};
-	fn.render = function(template, vars){
-		return template.replace(
-			/{{(.+?)}}/g,
-			function(a, b){
-				return vars[b] || "";
-			}
-		);
-	};
-}(Soil));
-
+}(Soil.Config.prototype));
 
 /**
  * Soil.Events
@@ -141,63 +217,6 @@ Soil.Events = function(){};
 
 }(Soil.Events.prototype));
 
-
-/**
- * Soil.Config
- * - configure options
- */
-Soil.Config = function(){};
-(function(fn){
-
-	fn.type = "Config";
-	fn.option = {};
-	fn._optionInit = false;
-
-	/**
-	 * Set or get the option
-	 * - if has value, set it and return the instance
-	 * - if has no value, return the value
-	 * - if object, set each key and value, return the instance
-	 * 
-	 * @param String key || Object option
-	 * @param Mixed value (optional)
-	 * @return Mixed
-	 */
-	fn.config = function(){
-		var self, args, a, b, has;
-
-		self = this;
-		args = arguments;
-		a = args[0];
-		b = args[1];
-		has = Soil.has(a, this.option);
-
-		if(! this._optionInit){
-			this.option = $.extend({}, this.option);
-			this._optionInit = true;
-		}
-
-		if(typeof(a) === "undefined"){
-			return this.option;
-		}
-		else if(Soil.isObject(a)){
-			$.each(a, function(key, value){
-				self.config(key, value);
-			});
-			return this;
-		}
-		else if(typeof(b) === "undefined"){
-			return has ? this.option[a] : null;
-		}
-		else if(Soil.has(a, this.option)){
-			this.option[a] = b;
-			return this;
-		}
-	};
-
-}(Soil.Config.prototype));
-
-
 /**
  * Soil.Attributes
  * - get and set attributes
@@ -266,20 +285,18 @@ Soil.Attributes = function(){};
 
 }(Soil.Attributes.prototype));
 
-
 /**
  * Soil.Model
  * - Soil.Events + Soil.Attributes
  */
 Soil.Model = function(){};
-Soil.Model.plant(Soil.Events, Soil.Attributes);
+Soil.Model[Soil.extendMethod](Soil.Events, Soil.Attributes);
 (function(fn){
 
 	fn.type = "Model";
 	fn.EVENT_CHANGE = "change";
 
 }(Soil.Model.prototype));
-
 
 /**
  * Soil.Stack
@@ -429,7 +446,6 @@ Soil.Stack = function(){};
 
 }(Soil.Stack.prototype));
 
-
 /**
  * Soil.View
  * - This is very cheap and has minimum features
@@ -437,7 +453,7 @@ Soil.Stack = function(){};
  */
 
 Soil.View = function(){};
-Soil.View.plant(Soil.Attributes);
+Soil.View[Soil.extendMethod](Soil.Attributes);
 (function(fn){
 
 	fn._template = null,
@@ -469,4 +485,3 @@ Soil.View.plant(Soil.Attributes);
 	}
 
 }(Soil.View.prototype));
-

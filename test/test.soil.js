@@ -100,6 +100,39 @@
 			expect(Soil.render(template, vars)).toEqual("FOO is BAR");
 		});
 
+		it("extend() : extend the props", function(){
+
+			var A = function(){};
+			A.prototype.foo = 1;
+			A.prototype.bar = 2;
+
+			var B = function(){};
+			B.prototype.foo = 3;
+			B.prototype.hoge = 4;
+
+			var C = function(){};
+			C.prototype.hoge = 5;
+			C.prototype.fuga = 6;
+
+			Soil.extend(A, B, C);
+
+			var a = new A;
+
+			expect({
+				foo : a.foo,
+				bar : a.bar,
+				hoge : a.hoge,
+				fuga : a.fuga
+			})
+			.toEqual({
+				foo : 3,
+				bar : 2,
+				hoge : 5,
+				fuga : 6
+			});
+
+		});
+
 	});
 
 

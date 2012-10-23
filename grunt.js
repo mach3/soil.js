@@ -2,9 +2,35 @@ module.exports = function(grunt){
 
 	grunt.initConfig({
 
+		watch : {
+			concat : {
+				files : ["src/soil/*.js"],
+				tasks : "concat:source"
+			}
+
+		},
+
 		concat : {
-			"dist/soil.js" : ["src/intro.js", "src/soil.js"],
-			"dist/soil.min.js" : ["src/intro.js", "src/soil.min.js"]
+			source : {
+				src : [
+					"src/soil/core.js",
+					"src/soil/config.js",
+					"src/soil/events.js",
+					"src/soil/attributes.js",
+					"src/soil/model.js",
+					"src/soil/stack.js",
+					"src/soil/view.js"
+				],
+				dest : "src/soil.js"
+			},
+			dist : {
+				src : ["src/intro.js", "src/soil.js"],
+				dest : "dist/soil.js"
+			},
+			distMin : {
+				src : ["src/intro.js", "src/soil.min.js"],
+				dest : "dist/soil.min.js"
+			}
 		},
 
 		min : {
@@ -13,6 +39,6 @@ module.exports = function(grunt){
 
 	});
 
-	grunt.registerTask("default", "min concat");
+	grunt.registerTask("default", "concat:source min concat:dist concat:distMin");
 
 };
