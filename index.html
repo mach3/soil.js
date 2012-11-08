@@ -1,154 +1,319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Soil.js : The basic prototype collection for class base programming with JavaScript, jQuery. " />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Soil.js by mach3</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <title>Soil.js</title>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/mach3/soil.js">View on GitHub</a>
-
-          <h1 id="project_title">Soil.js</h1>
-          <h2 id="project_tagline">The basic prototype collection for class base programming with JavaScript, jQuery. </h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/mach3/soil.js/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/mach3/soil.js/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+    <div class="wrapper">
+      <header>
+        <h1>Soil.js</h1>
+        <p>The basic prototype collection for class base programming with JavaScript, jQuery. </p>
+        <p class="view"><a href="https://github.com/mach3/soil.js">View the Project on GitHub <small>mach3/soil.js</small></a></p>
+        <ul>
+          <li><a href="https://github.com/mach3/soil.js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/mach3/soil.js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/mach3/soil.js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
         <h1>Soil.js</h1>
 
-<p>The basic prototype collection for class base programming with JavaScript, jQuery.</p>
+<p>version 0.9.3 (2012/11)</p>
 
-<h2>About</h2>
+<h2>これはなに</h2>
 
 <ul>
-<li>Just extend the prototype, add basic features to your classes</li>
-<li>Events, Config, Model, Stack is available</li>
-<li>Requires jQuery</li>
-</ul><h2>Usage</h2>
+<li>jQuery用のクラスライブラリです</li>
+<li>prototypeを継承して拡張します</li>
+<li>Soilオブジェクトのクラスを継承をすると基本的な機能が使えるようになります</li>
+</ul><h2>使い方</h2>
+
+<h3>Soilのクラスを継承する</h3>
+
+<p>プロトタイプで書かれたクラスを plant メソッドで継承します。</p>
+
+<div class="highlight"><pre><span class="c1">// 関数を定義します</span>
+<span class="kd">var</span> <span class="nx">MyClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
+
+<span class="c1">// plantメソッドでSoil.Eventsを継承すると、</span>
+<span class="c1">// カスタムイベントが使えるようになります。</span>
+<span class="nx">MyClass</span><span class="p">.</span><span class="nx">plant</span><span class="p">(</span><span class="nx">Soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+
+<span class="c1">// valueが変わった時にchangeイベントを発火するようにします</span>
+<span class="c1">// カスタムイベントの発火には trigger() を使います</span>
+<span class="nx">MyClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">MyClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">setValue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">){</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"change"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>Functionに拡張された plant() メソッドで継承が出来ます。<br>
+Soil.Eventsの他にも、Soilには基本的な機能を備えたクラス群が同梱してあります。<br>
+後は new でインタンスを生成して使うだけです。</p>
+
+<div class="highlight"><pre><span class="c1">// インスタンスを生成します</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyClass</span><span class="p">();</span>
+
+<span class="c1">// イベントハンドラの登録は on() を使います</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"My value has been changed to "</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">instance</span><span class="p">.</span><span class="nx">setValue</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">);</span> <span class="c1">// &lt;= "My value has been changed to foo"</span>
+</pre></div>
+
+<h3>複数クラスの継承</h3>
+
+<p>引数にクラスを列挙すれば複数のクラスから機能を継承できます。</p>
+
+<div class="highlight"><pre><span class="c1">// 後に記述された物が優先されます。</span>
+<span class="nx">MyClass</span><span class="p">.</span><span class="nx">plant</span><span class="p">(</span><span class="nx">Soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">,</span> <span class="nx">Soil</span><span class="p">.</span><span class="nx">Attributes</span><span class="p">);</span>
+</pre></div>
+
+<h3>独自クラスの継承</h3>
+
+<p>内部では prototype の中身をコピーしているだけなので、勿論独自クラスも継承できます。</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Animal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
+<span class="p">...</span>
+<span class="kd">var</span> <span class="nx">Dog</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){};</span>
+<span class="nx">Dog</span><span class="p">.</span><span class="nx">plant</span><span class="p">(</span><span class="nx">Animal</span><span class="p">);</span>
+</pre></div>
+
+<h2>クラス群</h2>
+
+<h3>Soil.Config</h3>
+
+<h4>option : Object</h4>
+
+<p>設定用の項目を定義します。（定義されていない項目は追加できません）</p>
+
+<div class="highlight"><pre><span class="nx">MyClass</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">option</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">foo</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="nx">hoge</span> <span class="o">:</span> <span class="kc">null</span>
+<span class="p">};</span>
+</pre></div>
+
+<h4>config( key:String|values:Object, value:* ) : *</h4>
+
+<p>値を設定または取得します。</p>
+
+<div class="highlight"><pre><span class="c1">// 設定</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span><span class="s2">"hoge"</span> <span class="o">:</span> <span class="s2">"fuga"</span><span class="p">});</span>
+
+<span class="c1">// 取得</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">);</span> <span class="c1">// &lt;= "bar"</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">config</span><span class="p">();</span> <span class="c1">// &lt;= {"hoge":"fuga", "foo":"bar"}</span>
+</pre></div>
 
 <h3>Soil.Events</h3>
 
-<p>First of all, define the "Foo" class as below.
-Extend the "Soil.Events" using "Soil.extend()".</p>
+<p>カスタムイベント機能を提供します。</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="c1">// Constructor</span>
-<span class="p">};</span>
-<span class="c1">// Extend the Event's prototype</span>
-<span class="nx">Soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Foo</span><span class="p">,</span> <span class="nx">Soil</span><span class="p">.</span><span class="nx">Events</span><span class="p">);</span>
+<h4>on( type:String, handler:Function )</h4>
 
-<span class="c1">// Set your own features</span>
-<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
-<span class="nx">Foo</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">hoge</span> <span class="o">=</span> <span class="s2">"fuga"</span><span class="p">;</span>
+<h4>off( type:String, handler:Function )</h4>
+
+<p>on : イベントハンドラの登録。
+off : イベントハンドラの解除。</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){}</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// 登録</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// 解除</span>
 </pre></div>
 
-<p>And initialize with "new".
-on(), off(), trigger() is available now.</p>
+<h4>trigger( type:String )</h4>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Foo</span><span class="p">,</span>
-    <span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span> <span class="p">...</span> <span class="p">};</span>
+<p>カスタムイベントを発火します。</p>
 
-<span class="nx">f</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// add event listener</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// fire the event</span>
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"change"</span><span class="p">);</span>
+</pre></div>
 
-<span class="nx">f</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s2">"test"</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span> <span class="c1">// unregister event listener</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">"test"</span><span class="p">);</span> <span class="c1">// nothing is happend</span>
+<h3>Soil.Attributes</h3>
+
+<p>属性のセッター・ゲッターを提供します。</p>
+
+<h4>attr : Object</h4>
+
+<p>属性を定義します。（定義されていない属性は追加出来ません）</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="nx">age</span> <span class="o">:</span> <span class="kc">null</span>
+<span class="p">};</span>
+</pre></div>
+
+<h4>set( key:String, value:* )</h4>
+
+<p>属性の値を設定します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"john"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
+</pre></div>
+
+<h4>get( key:String ) : *</h4>
+
+<p>属性の値を取得します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">);</span> <span class="c1">// &lt;= "john"</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"age"</span><span class="p">);</span> <span class="c1">// &lt;= 18</span>
 </pre></div>
 
 <h3>Soil.Model</h3>
 
-<p>This is example for "Soil.Model".
-set(), get() is available.
-And also on(), trigger() of soil.Events is available.</p>
+<p>Soil.Events と Soil.Attributes を継承し、
+両者の機能に加えて、値の変更時に change イベントを発火します。</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="c1">// Constructor</span>
-<span class="p">};</span>
-<span class="c1">// can extend multiple classes</span>
-<span class="nx">Soil</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Person</span><span class="p">,</span> <span class="nx">Soil</span><span class="p">.</span><span class="nx">Model</span><span class="p">);</span>
-
-<span class="c1">// Set your own attribute</span>
-<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="nx">name</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-    <span class="nx">age</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-    <span class="nx">gender</span> <span class="o">:</span> <span class="kc">null</span>
-<span class="p">};</span>
-</pre></div>
-
-<p>And initialize with "new",
-then features of Soil.Model and Soil.Events are available now.</p>
-
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">;</span>
-
-<span class="nx">p</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="c1">// "change" event will be fired when something changed.</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"something has been changed"</span><span class="p">);</span>
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Changed to "</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">));</span>
 <span class="p">});</span>
 
-<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"john"</span><span class="p">);</span>
-<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
-<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"male"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"john"</span><span class="p">);</span> <span class="c1">// &lt;= "Changed to john"</span>
 </pre></div>
 
-<div class="highlight"><pre><span class="c1">// set values with object</span>
-<span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
-    <span class="nx">name</span> <span class="o">:</span> <span class="s2">"john"</span><span class="p">,</span>
-    <span class="nx">age</span> <span class="o">:</span> <span class="mi">18</span><span class="p">,</span>
-    <span class="nx">gender</span> <span class="o">:</span> <span class="s2">"male"</span>
+<h3>Soil.Stack</h3>
+
+<p>値をスタックするクラス。</p>
+
+<h4>add( value:* )</h4>
+
+<p>値を追加します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"hoge"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"fuga"</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">);</span>
+</pre></div>
+
+<h4>fetch( [index:Integer] ) : *</h4>
+
+<p>値を取得します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fetch</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// &lt;= "hoge"</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fetch</span><span class="p">();</span> <span class="c1">// &lt;= ["hoge", "fuga", "foo", "bar", "baz"]</span>
+</pre></div>
+
+<h4>index( [index:Integer] ) : *</h4>
+
+<p>内部インデックスを設定または取得します。
+設定に成功するとインデックス番号を、失敗すると false を返します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">// &lt;= 2</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">();</span> <span class="c1">// &lt;= 2</span>
+
+<span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span> <span class="c1">// &lt;= false</span>
+</pre></div>
+
+<h4>rewind()</h4>
+
+<p>内部インデックスを0に戻します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span> <span class="c1">// &lt;= 3</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">rewind</span><span class="p">();</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">();</span> <span class="c1">// &lt;= 0</span>
+</pre></div>
+
+<h4>next() / prev()</h4>
+
+<p>next : 内部インデックスを進めます<br>
+prev : 内部インデックスを巻き戻します</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">();</span> <span class="c1">// &lt;= 4</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">prev</span><span class="p">();</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">();</span> <span class="c1">// &lt;= 3</span>
+</pre></div>
+
+<h4>current() : *</h4>
+
+<p>現在の値を取得します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">index</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span> <span class="c1">// &lt;= "fuga"</span>
+</pre></div>
+
+<h4>each( callback:Function )</h4>
+
+<p>値を走査し、コールバック関数に渡します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="nx">value</span> <span class="p">);</span>
 <span class="p">});</span>
-
-<span class="c1">// get value</span>
-<span class="nx">p</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">);</span> <span class="c1">// =&gt; "john"</span>
-
-<span class="c1">// get all values</span>
-<span class="nx">p</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span> <span class="c1">// =&gt; {name:"john", age:18, gender:"male"}</span>
 </pre></div>
 
-<h3>Other Classes</h3>
+<h4>remove( index:Integer|callback:Function )</h4>
+
+<p>条件に合った値を削除します。
+条件には、インデックス番号か、あるいはコールバック関数を渡すことができます。
+（コールバック関数がtrueを返した場合に、その値を削除する）
+削除後、インデックスは振り直されます。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span> <span class="c1">// &lt;= "foo" を削除</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nx">value</span> <span class="o">===</span> <span class="s2">"hoge"</span><span class="p">;</span> <span class="c1">// &lt;= "hoge" を削除</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Soil.View</h3>
+
+<p>ビュークラス。Mustacheのラッパーとしても働きます。
+Soil.Attributes を継承。</p>
+
+<h4>template( [template:String] ) : *</h4>
+
+<p>テンプレートを設定あるいは取得します。
+テンプレートの形式は、"{{key}}" を "value" に置換するだけの単純な物です。
+keyが設定されていない場合は空白に置換されます。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="s2">"Hello, {{name}} !"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">template</span><span class="p">();</span> <span class="c1">// &lt;= "Hello, {{name}} !"</span>
+</pre></div>
+
+<h4>render( [attr:Object] ) : String</h4>
+
+<p>レンダリング結果を文字列で返します。
+引数にオブジェクトが渡された場合はその値を元にレンダリングし、
+そうでない場合はインスタンスのattrを使用します。</p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"World"</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span> <span class="c1">// &lt;= "Hello, World !"</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span> <span class="nx">name</span> <span class="o">:</span> <span class="s2">"Earth"</span> <span class="p">});</span> <span class="c1">// &lt;= "Hello, Earth !"</span>
+</pre></div>
+
+<p>このクラス自体は単純な値の代入の機能しか備えていませんが、
+レンダリング実行時にMustacheがロードされていればMustacheでレンダリングを行います。</p>
+
+<h2>作者</h2>
+
+<p>mach3</p>
 
 <ul>
-<li>Soil.Attributes</li>
-<li>Soil.Config</li>
-<li>Soil.Stack</li>
-<li>Soil.View</li>
-</ul><h2>Author</h2>
-
-<p>mach3ss</p>
-
-<ul>
-<li><a href="http://twitter.com/mach3ss">Twitter</a></li>
-<li><a href="http://blog.mach3.jp">Blog</a></li>
-<li><a href="http://www.mach3.jp">WebSite</a></li>
+<li><a href="http://twitter.com/mach3ss">twitter</a></li>
+<li><a href="http://github.com/mach3">github</a></li>
+<li><a href="http://blog.mach3.jp">blog</a></li>
 </ul>
       </section>
     </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Soil.js maintained by <a href="https://github.com/mach3">mach3</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
+    <footer>
+      <p>Project maintained by <a href="https://github.com/mach3">mach3</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
-
   </body>
 </html>
