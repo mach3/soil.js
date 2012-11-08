@@ -40,7 +40,7 @@ Functionに拡張された plant() メソッドで継承が出来ます。
 Soil.Eventsの他にも、Soilには基本的な機能を備えたクラス群が同梱してあります。  
 後は new でインタンスを生成して使うだけです。
 
-```
+```js
 // インスタンスを生成します
 var instance = new MyClass();
 
@@ -56,7 +56,7 @@ instance.setValue("foo"); // <= "My value has been changed to foo"
 
 引数にクラスを列挙すれば複数のクラスから機能を継承できます。
 
-```
+```js
 // 後に記述された物が優先されます。
 MyClass.plant(Soil.Events, Soil.Attributes);
 ```
