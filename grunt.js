@@ -2,12 +2,8 @@ module.exports = function(grunt){
 
 	grunt.initConfig({
 
-		watch : {
-			concat : {
-				files : ["src/soil/*.js"],
-				tasks : "concat:source"
-			}
-
+		meta : {
+			banner : grunt.file.read("src/intro.js")
 		},
 
 		concat : {
@@ -27,19 +23,22 @@ module.exports = function(grunt){
 			dist : {
 				src : ["src/intro.js", "src/soil.js"],
 				dest : "dist/soil.js"
-			},
-			distMin : {
-				src : ["src/intro.js", "src/soil.min.js"],
-				dest : "dist/soil.min.js"
 			}
 		},
 
 		min : {
-			"src/soil.min.js" : ["src/soil.js"]
-		}
+			"src/soil.min.js" : ["<banner>", "src/soil.js"]
+		},
 
+		watch : {
+			concat : {
+				files : ["src/soil/*.js"],
+				tasks : "concat:source"
+			}
+		}
+		
 	});
 
-	grunt.registerTask("default", "concat:source min concat:dist concat:distMin");
+	grunt.registerTask("default", "concat:source concat:dist min");
 
 };

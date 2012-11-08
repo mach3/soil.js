@@ -1,0 +1,8 @@
+{
+	"src_files" : [
+		"./test/src/jquery.js",
+		"./test/src/mustache.js",
+		"./src/soil.js",
+		"./test/test-soil.js"
+	]
+}
